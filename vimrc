@@ -11,6 +11,8 @@ Plug 'tpope/vim-abolish'
 Plug 'stephpy/vim-php-cs-fixer'
 Plug 'honza/vim-snippets'
 Plug 'SirVer/ultisnips'
+Plug 'vimwiki/vimwiki'
+Plug 'tomasr/molokai'
 
 call plug#end()
 set encoding=utf-8
@@ -22,7 +24,15 @@ syntax on
 " Theme
 set background=dark
 set nu
+colorscheme molokai
+
+set mouse=vic
+let &t_SI="\e[5 q"
+let &t_EI="\e[2 q"
+
+set cursorline
 nnoremap <Leader>l :set cursorline!<CR>
+highlight CursorLineNr gui=bold guifg=DarkRed guibg=#000000
 
 " Pdf View
 :command! -complete=file -nargs=1 Rpdf :r !pdftotext -nopgbrk <q-args> -
