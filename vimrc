@@ -25,6 +25,7 @@ syntax on
 set background=dark
 set nu
 colorscheme molokai
+highlight LineNr ctermfg=gray ctermbg=121212
 
 set mouse=vic
 let &t_SI="\e[5 q"
