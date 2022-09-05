@@ -1,0 +1,61 @@
+# vim: ft=muttrc
+#----------------#
+# Authentication #
+#----------------#
+set my_email = ""
+set my_name = ""
+set my_gpgid = ""
+set my_sign_gpgid = $my_gpgid
+
+# File With smtp_pass & imap_pass variables
+source "gpg -d ~/.mutt/password.gpg |"
+
+#------#
+# IMAP #
+#------#
+set imap_user = $my_email
+set spoolfile = imaps://imap.gmail.com/INBOX
+set folder = imaps://imap.gmail.com/
+set record = "imaps://imap.gmail.com/[Gmail]/Sent Mail"
+set postponed = "imaps://imap.gmail.com/[Gmail]/Drafts"
+set mbox = "imaps://imap.gmail.com/[Gmail]/Drafts"
+
+set header_cache = "~/.mutt/cache/headers"
+set message_cachedir = "~/.mutt/cache/bodies"
+set certificate_file = "/etc/ssl/certs/ca-certificates.crt"
+
+set mail_check = 30
+set move = no
+set imap_keepalive = 900
+set sort = threads
+
+#------#
+# SMTP #
+#------#
+set smtp_url = smtp://$my_email@smtp.gmail.com:587/
+
+set ssl_force_tls = yes
+set ssl_starttls = yes
+set ssl_use_sslv2 = no
+set ssl_use_sslv3 = no
+set ssl_use_tlsv1 = no
+set ssl_verify_dates = yes
+set ssl_verify_host = yes
+
+#-------------#
+# Composition #
+#-------------#
+set editor = "vim"
+set edit_headers = yes
+set charset = UTF-8
+set copy = yes
+
+unset use_domain
+set realname = $my_name
+set from = $my_email
+set use_from = yes
+
+alternative_order text/plain text/html text/enriched text/html
+
+# GPG Configuration
+source ~/.mutt/gpg.rc
