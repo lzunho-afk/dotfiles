@@ -74,6 +74,11 @@ let g:project_use_nerdtree = 1
 
 " Compilation
 autocmd FileType cpp nnoremap   <leader>ç   :!g++ -lm -lcrypt -O2 -std=c++11 -pipe -DONLINE_JUDGE %<CR>
-autocmd FileType cpp nnoremap   <leader>;   :!./a.out<CR>
-autocmd FileType cpp nnoremap   <leader>.   :!for f in %:r.*.test; do echo "TEST: $f"; ./a.out < $f; done<CR>
-
+if has('gui_running')
+    autocmd FileType cpp nnoremap   <leader>;   :!xterm -e "time ./a.out; read"<CR><CR>
+    autocmd FileType cpp nnoremap   <leader>.   :!xterm -e "for f in %:r.*.test; do echo \"TEST: $f\"; time ./a.out < $f; done; read"<CR><CR>
+else
+    autocmd FileType cpp nnoremap   <leader>;   :!./a.out<CR>
+    autocmd FileType cpp nnoremap   <leader>~   :!time ./a.out<CR>
+    autocmd FileType cpp nnoremap   <leader>.   :!for f in %:r.*.test; do echo "TEST: $f"; ./a.out < $f; done<CR>
+endif
