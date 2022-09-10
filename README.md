@@ -1,4 +1,4 @@
-# lzunho-afk Dotfile
+# lzunho-afk Dotfiles
 
 ## Mutt
 
