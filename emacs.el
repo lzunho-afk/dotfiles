@@ -16,6 +16,20 @@
 ;;    (set-face-background 'default "unspecified-bg" (selected-frame))))
 ;;(add-hook 'window-setup-hook 'on-after-init)
 
+;; emacsclient server 
+(server-start)
+
+;; Minimizing gargabe collection during startup
+(setq gc-cons-threshold most-positive-fixnum)
+
+;; back to 8 MiB (default 800kB)
+(add-hook 'emacs-startup-hook
+	  (lambda()
+	    (setq gc-cons-threshold (expt 2 23))))
+
+;; "loading" messages buffer
+(setq message-log-max t)
+
 ;; Line numbers
 (when (version<= "26.0.50" emacs-version )
   (global-display-line-numbers-mode))
