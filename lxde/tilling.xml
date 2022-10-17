@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openbox_config xmlns='http://openbox.org/3.4/rc'>
+  <keyboard>
+    <keybind key="C-W-v">
+      <action name="UnmaximizeFull"/>
+      <action name="MoveResizeTo">
+	<width>50%</width>
+      </action>
+      <action name="MaximizeVert"/>
+      <action name="MoveResizeTo">
+	<x>0</x>
+	<y>0</y>
+      </action>
+      <action name="NextWindow">
+	<interactive>no</interactive>
+	<dialog>none</dialog>
+	<finalactions>
+	  <action name="UnmaximizeFull"/>
+	  <action name="MoveResizeTo">
+	    <width>50%</width>
+	  </action>
+	  <action name="MaximizeVert"/>
+	  <action name="MoveResizeTo">
+	    <x>-0</x>
+	    <y>0</y>
+	  </action>
+	</finalactions>
+      </action>
+    </keybind>
+    <keybind key="C-W-h">
+      <action name="UnmaximizeFull"/>
+      <action name="MoveResizeTo">
+	<height>50%</height>
+      </action>
+      <action name="MaximizeHorz"/>
+      <action name="MoveResizeTo">
+	<x>0</x>
+	<y>0</y>
+      </action>
+      <action name="NextWindow">
+	<interactive>no</interactive>
+	<dialog>none</dialog>
+	<finalactions>
+	  <action name="UnmaximizeFull"/>
+	  <action name="MoveResizeTo">
+	    <height>50%</height>
+	  </action>
+	  <action name="MaximizeHorz"/>
+	  <action name="MoveResizeTo">
+	    <x>0</x>
+	    <y>-0</y>
+	  </action>
+	</finalactions>
+      </action>
+    </keybind>
+    <keybind key="C-W-r">
+      <action name="UnmaximizeFull"/>
+      <action name="NextWindow">
+	<interactive>no</interactive>
+	<dialog>none</dialog>
+	<finalactions>
+	  <action name="UnmaximizeFull"/>
+	</finalactions>
+      </action>
+    </keybind>
+  </keyboard>
+</openbox_config>
