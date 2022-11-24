@@ -4,9 +4,12 @@
 (package-initialize)
 
 (custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   (quote
-    (tabbar php-mode solarized-theme yasnippet-classic-snippets yasnippet-snippets competitive-programming-snippets use-package magit auto-complete yasnippet flycheck js2-mode web-mode smartparens dracula-theme darcula-theme treemacs monokai-theme))))
+   '(css-comb impatient-mode emmet-mode tabbar php-mode solarized-theme yasnippet-classic-snippets yasnippet-snippets competitive-programming-snippets use-package magit auto-complete yasnippet flycheck js2-mode web-mode smartparens dracula-theme darcula-theme treemacs monokai-theme)))
 
 ;; Theme
 ;;(load-theme 'solarized-zenburn)
@@ -19,6 +22,24 @@
 ;; emacsclient server 
 (server-start)
 
+;; Start the initial frame maximized
+(add-to-list 'initial-frame-alist '(fullscreen . maximized))
+
+;; Start every frame maximized
+(add-to-list 'default-frame-alist '(fullscreen . maximized))
+
+;; Disable menu, tools, scrollbar, startup screen
+(menu-bar-mode -1)
+(tool-bar-mode -1)
+(toggle-scroll-bar -1)
+(setq inhibit-splash-screen t)
+
+;; Font
+(set-face-attribute 'default nil :font "Iosevka Fixed-10" )
+
+;; Cursor
+(setq-default cursor-type 'bar)
+
 ;; Minimizing gargabe collection during startup
 (setq gc-cons-threshold most-positive-fixnum)
 
@@ -30,15 +51,22 @@
 ;; "loading" messages buffer
 (setq message-log-max t)
 
+;; Backup files
+(setq make-backup-files nil)
+
 ;; Line numbers
 (when (version<= "26.0.50" emacs-version )
   (global-display-line-numbers-mode))
 
 ;; treemacs
-(global-set-key [f8] 'treemacs)
+(global-set-key (kbd "C-t") 'treemacs)
 
 ;; Backup files
 (setq backup-directory-alist `(("." . "~/.emacs.d/.files_backup")))
+
+;; Indentation
+(setq c-default-style "linux"
+      c-basic-offset 4)
 
 ;; smartparens
 (require 'smartparens-config)
@@ -65,6 +93,15 @@
 (add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
 (autoload 'web-mode "web-mode" "Web mode library." t)
+
+;; emmet
+(require 'emmet-mode)
+
+;; Markdown preview
+(defun markdown-html (buffer)
+  (princ (with-current-buffer buffer
+	   (format "<!DOCTYPE html><html><title>Impatient Markdown</title><xmp theme=\"united\" style=\"display:none;\"> %s </xmp><script src=\"http://ndossougbe.github.io/strapdown/dist/strapdown.js\"></script></html>" (buffer-substring-no-properties (point-min) (point-max))))
+	 (current-buffer)))
 
 ;; auto-complete
 (ac-config-default)
@@ -99,7 +136,7 @@
 (defun my-ispell-hook ()
   (flyspell-mode))
 
-;; Cmd interaction (not tested)
+;; Cmd interaction
 (defun execute-cpp-program ()
   (interactive)
   (defvar foo)
