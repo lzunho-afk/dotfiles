@@ -1,5 +1,13 @@
 # lzunho-afk Dotfiles
 
+## Emacs
+
+To load Emacs config you just need copy *"emacs.el"* file to default emacs config path (`"~/.emacs.el"`) and install preselected packages from elpa/melpa repositories:
+
+```
+M-x package-install-selected-packages
+```
+
 ## Mutt
 
 This mutt config uses gmail imap and smtp with a little encryption (gpg). For GMail accounts just set the "my_*" variables in muttrc and you are done (if using other email servers this can be done with some changes - "do it yourself"). 
