@@ -1,6 +1,5 @@
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-
 (package-initialize)
 
 (custom-set-variables
@@ -9,121 +8,181 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(css-comb impatient-mode emmet-mode tabbar php-mode solarized-theme yasnippet-classic-snippets yasnippet-snippets competitive-programming-snippets use-package magit auto-complete yasnippet flycheck js2-mode web-mode smartparens dracula-theme darcula-theme treemacs monokai-theme)))
+   '(helm-flyspell treemacs all-the-icons helm-projectile magit golden-ratio-scroll-screen golden-ratio helm-swoop multiple-cursors expand-region json-mode yaml-mode use-package markdown-mode zenburn-theme helm smartparens)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
 
-;; Theme
-;;(load-theme 'solarized-zenburn)
-(load-theme 'monokai t)
-;;(defun on-after-init ()
-;;  (unless (display-graphic-p (selected-frame))
-;;    (set-face-background 'default "unspecified-bg" (selected-frame))))
-;;(add-hook 'window-setup-hook 'on-after-init)
-
-;; emacsclient server 
-(server-start)
-
-;; Start the initial frame maximized
+;; Startup screen size
 (add-to-list 'initial-frame-alist '(fullscreen . maximized))
-
-;; Start every frame maximized
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
-;; Disable menu, tools, scrollbar, startup screen
-(menu-bar-mode -1)
-(tool-bar-mode -1)
-(toggle-scroll-bar -1)
+;; Line Numbers
+(when (version<= "26.0.50" emacs-version )
+  (global-display-line-numbers-mode))
+
+;; Line-break
+(add-hook 'text-mode-hook 'turn-on-auto-fill)
+
+;; minibuffer history & bk files
+(setq savehist-file "~./.emacs.d/local/emacs-history")
+;;(savehist-mode 1)
+(setq make-backup-files nil)
+
+;; Editor font
+;;(set-frame-font "Source Code Pro-11" nil t)
+(set-face-attribute 'default nil :height 100)
+
+;; gui settings
+(tool-bar-mode 1)
+(menu-bar-mode 1)
+(scroll-bar-mode 1)
 (setq inhibit-splash-screen t)
 
-;; Font
-(set-face-attribute 'default nil :font "Iosevka Fixed-10" )
-
-;; Cursor
+;; Cursor style
 (setq-default cursor-type 'bar)
 
-;; Minimizing gargabe collection during startup
+;; Startup garbage collection
 (setq gc-cons-threshold most-positive-fixnum)
 
 ;; back to 8 MiB (default 800kB)
 (add-hook 'emacs-startup-hook
 	  (lambda()
-	    (setq gc-cons-threshold (expt 2 23))))
+	    (setq gc-cons-threshold (expt  2 23))))
 
 ;; "loading" messages buffer
 (setq message-log-max t)
 
-;; Backup files
-(setq make-backup-files nil)
-
-;; Line numbers
-(when (version<= "26.0.50" emacs-version )
-  (global-display-line-numbers-mode))
-
-;; treemacs
-(global-set-key (kbd "C-t") 'treemacs)
-
-;; Backup files
-(setq backup-directory-alist `(("." . "~/.emacs.d/.files_backup")))
-
-;; Indentation
-(setq c-default-style "linux"
-      c-basic-offset 4)
-
-;; smartparens
-(require 'smartparens-config)
-;;
-;;(add-hook 'c-mode-hook 'my-smartparens-hook)
-;;(add-hook 'c++-mode-hook 'my-smartparens-hook)
-;;(add-hook 'java-mode-hook 'my-smartparens-hook)
-;;(defun my-smartparens-hook ()
-;;  (smartparens-mode))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Completion & Selection config ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (use-package smartparens
   :config
   (smartparens-global-mode 1)
-  )
+  (sp-pair "(" ")" :wrap "C-(")
+  (sp-pair "'" nil :actions :rem))
 
-;; webmode
-(require 'web-mode)
-(add-to-list 'auto-mode-alist '("\\.tpl\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.php\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.[agj]sp\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.as[cp]x\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.mustache\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
-(autoload 'web-mode "web-mode" "Web mode library." t)
+(use-package markdown-mode
+  :config
+  (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
+  (add-hook 'markdown-mode-hook #'auto-fill-mode)
+  (set-face-attribute 'markdown-code-face nil :inherit 'org-block))
 
-;; emmet
-(require 'emmet-mode)
+(use-package yaml-mode)
+(use-package json-mode)
 
-;; Markdown preview
-(defun markdown-html (buffer)
-  (princ (with-current-buffer buffer
-	   (format "<!DOCTYPE html><html><title>Impatient Markdown</title><xmp theme=\"united\" style=\"display:none;\"> %s </xmp><script src=\"http://ndossougbe.github.io/strapdown/dist/strapdown.js\"></script></html>" (buffer-substring-no-properties (point-min) (point-max))))
-	 (current-buffer)))
+(use-package golden-ratio)
+(use-package helm
+  :config
+  (global-set-key (kbd "C-c h") 'helm-command-prefix)
+  (global-unset-key (kbd "C-x c"))
+  
+  (global-set-key (kbd "M-x") 'helm-M-x)
+  (global-set-key (kbd "C-x C-f") 'helm-find-files)
+  
+  (setq helm-M-x-fuzzy-match t)
+  
+  (global-set-key (kbd "M-y") 'helm-show-kill-ring)
+  (global-set-key (kbd "M-l") 'helm-mini)
+  
+  (setq helm-buffers-fuzzy-matching t
+	helm-recentf-fuzzy-match t)
+  
+  (global-set-key (kbd "C-c h o") 'helm-occur)
+  (global-set-key (kbd "C-h a") 'helm-apropos)
+  (setq helm-apropos-fuzzy-match t)
+  (setq helm-semantic-fuzzy-match t
+	helm-imenu-fuzzy-match t)
 
-;; auto-complete
-(ac-config-default)
+  (helm-autoresize-mode t)
+  (defun pl/helm-alive-p ()
+    (if (boundp 'helm-alive-p)
+	(symbol-value 'helm-alive-p)))
+  (add-to-list 'golden-ratio-inhibit-functions 'pl/helm-alive-p)
+  (helm-mode 1)
 
-;; yasnippet
-(require 'yasnippet)
-(yas-global-mode 1)
+  (defun yt/helm-copy-unmarked-to-buffer ()
+    (interactive)
+    (with-helm-buffer
+      (helm-mark-all)
+      (cl-loop for cand in (helm-marked-candidates)
+	       do (with-helm-current-buffer
+		    (insert cand "\n")))))
+  (define-key helm-map (kbd "C-c C-i") 'helm-copy-unmarked-to-buffer)
+  (setq helm-ff-guess-ffap-urls nil))
 
-;; flycheck
-(global-flycheck-mode)
+(use-package multiple-cursors
+  :config
+  (global-set-key (kbd "C->") 'mc/mark-next-like-this)
+  (global-set-key (kbd "C-<") 'mc/mark-previous-like-this))
 
-;; MAGIT
+(use-package helm-swoop
+  :config
+  (global-set-key (kbd "<C-f1>") 'helm-swoop)
+  (setq helm-multi-swoop-edit-save t)
+  (setq helm-swoop-split-with-multiple-windows nil)
+  (setq helm-swoop-split-direction 'split-window-vertically)
+  (setq helm-swoop-speed-or-color nil))
+
+(use-package expand-region
+  :config
+  (global-set-key (kbd "C-=") 'er/expand-region))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; File Management & Rel. ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(use-package treemacs
+  :config
+  (global-set-key (kbd "C-t") 'treemacs))
+
 (use-package magit
-	     :config
-	     (global-set-key (kbd "C-c m") 'magit-status))
+  :config
+  (global-auto-revert-mode t)
+  (global-set-key (kbd "C-c m") 'magit-status))
 
-;; ispell
+(use-package projectile
+  :config
+  (projectile-mode +1)
+  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+  (helm-projectile-on)
+  (require 'helm-projectile)
+  (projectile-global-mode)
+  (setq projectile-enable-caching t)
+  (setq projectile-switch-project-action 'projectile-dired)
+  (setq projectile-remember-window-configs t )
+  (setq projectile-completion-system 'helm)
+  (setq projectile-switch-project-action 'helm-projectile)
+  (setq projectile-project-root-files-bottom-up '(".git" ".projectile")))
+
+;; rename current buffer-visiting file
+(defun yt/rename-current-buffer-file ()
+  "Renames current buffer and file it is visiting."
+  (interactive)
+  (let ((name (buffer-name))
+	(filename (buffer-file-name)))
+    (if (not (and filename (file-exists-p filename)))
+	(error "Buffer '%s' is not visiting a file!" name)
+      (let ((new-name (read-file-name "New name: " filename)))
+	if (get-buffer new-name)
+	(error "A buffer named '%s' already exists!" new-name)
+	(rename-file filename new-name 1)
+	(rename-buffer new-name)
+	(set-visited-file-name new-name)
+	(set-buffer-modified-p nil)
+	(message "File '%s' successfully renamed to '%s'"
+		 name (file-name-nondirectory new-name))))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Language & Spelling ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;
 (with-eval-after-load "ispell"
   (setenv "LANG" "pt_BR.UTF-8")
   (setq ispell-program-name "hunspell")
   (setq ispell-dictionary "pt_BR")
-  
+
   (ispell-set-spellchecker-params)
   (ispell-hunspell-add-multi-dic "pt_BR")
 
@@ -135,24 +194,3 @@
 (add-hook 'latex-mode-hook 'my-ispell-hook)
 (defun my-ispell-hook ()
   (flyspell-mode))
-
-;; Cmd interaction
-(defun execute-cpp-program ()
-  (interactive)
-  (defvar foo)
-  (setq foo (concat "g++ -lm -lcrypt -O2 -pipe -DONLINE_JUDGE " (buffer-name) " && ./a.out"))
-  (shell-command foo))
-(defun execute-cansi-program ()
-  (interactive)
-  (defvar foo)
-  (setq foo (concat "gcc -lm -lcrypt -O2 -pipe -ansi -DONLINE_JUDGE " (buffer-name) " && ./a.out"))
-  (shell-command foo))
-(add-hook 'c-mode-common-hook
-	  (lambda ()
-	    (local-set-key [f5] 'execute-cansi-program)))
-(add-hook 'c++-mode-hook
-	  (lambda ()
-	    (local-set-key [f5] 'execute-cpp-program)))
-
-;; Latex
-(global-set-key (kbd "M-ç") 'org-latex-export-to-pdf)
