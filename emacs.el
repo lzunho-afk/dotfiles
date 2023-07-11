@@ -8,7 +8,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(helm-flyspell treemacs all-the-icons helm-projectile magit golden-ratio-scroll-screen golden-ratio helm-swoop multiple-cursors expand-region json-mode yaml-mode use-package markdown-mode zenburn-theme helm smartparens)))
+   '(yasnippet helm-xref dap-mode lsp-mode cmake-mode htmlize helm-flyspell treemacs all-the-icons helm-projectile magit golden-ratio-scroll-screen golden-ratio helm-swoop multiple-cursors expand-region json-mode yaml-mode use-package markdown-mode zenburn-theme helm smartparens)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -53,8 +53,13 @@
 	  (lambda()
 	    (setq gc-cons-threshold (expt  2 23))))
 
+;; lsp_mode && dap_mode
+
+
 ;; "loading" messages buffer
 (setq message-log-max t)
+
+(global-set-key (kbd "C-c s") 'eshell)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Completion & Selection config ;;
@@ -77,6 +82,8 @@
 (use-package golden-ratio)
 (use-package helm
   :config
+  (require 'helm-xref)
+  
   (global-set-key (kbd "C-c h") 'helm-command-prefix)
   (global-unset-key (kbd "C-x c"))
   
@@ -130,6 +137,24 @@
 (use-package expand-region
   :config
   (global-set-key (kbd "C-=") 'er/expand-region))
+
+(use-package lsp-mode
+  :config
+  (add-hook 'c-mode-hook 'lsp)
+  (add-hook 'c++-mode-hook 'lsp)
+  (setq gc-cons-threshold (* 100 1024 1024)
+	read-process-output-max (* 1024 1024)
+	treemacs-space-between-root-nodes nil
+	company-idle-delay 0.0
+	company-minimum-prefix-length 1
+	lsp-idle-delay 0.1)  ;; clangd is fast
+
+  (with-eval-after-load 'lsp-mode
+    (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration)
+    (require 'dap-cpptools)
+    (yas-global-mode))
+  )
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; File Management & Rel. ;;
@@ -192,5 +217,18 @@
     (write-region "" nil ispell-personal-dictionary nil 0)))
 
 (add-hook 'latex-mode-hook 'my-ispell-hook)
+(add-hook 'org-mode-hook 'my-ispell-hook)
 (defun my-ispell-hook ()
   (flyspell-mode))
+
+;;;;;;;;;;;;;;;;;;;;;;;
+;; Org mode Specific ;;
+;;;;;;;;;;;;;;;;;;;;;;;
+(global-set-key (kbd "C-c e") 'org-html-export-to-html)
+
+(setq org-html-htmlize-output-type 'css)
+
+(setq org-export-html-postamble-format
+      '("pt-br" "<p class=\"author\">Escrito por <b>%a (%e) (c) MIT</b></p>
+<p class=\"date\">Atualizado em %d</p>
+<p class=\"creator\">Gerado por %c</p>"))
