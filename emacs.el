@@ -8,7 +8,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(yasnippet helm-xref dap-mode lsp-mode cmake-mode htmlize helm-flyspell treemacs all-the-icons helm-projectile magit golden-ratio-scroll-screen golden-ratio helm-swoop multiple-cursors expand-region json-mode yaml-mode use-package markdown-mode zenburn-theme helm smartparens)))
+   '(smart-tabs-mode yasnippet helm-xref dap-mode lsp-mode cmake-mode htmlize helm-flyspell treemacs all-the-icons helm-projectile magit golden-ratio-scroll-screen golden-ratio helm-swoop multiple-cursors expand-region json-mode yaml-mode use-package markdown-mode zenburn-theme helm smartparens)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -53,13 +53,22 @@
 	  (lambda()
 	    (setq gc-cons-threshold (expt  2 23))))
 
-;; lsp_mode && dap_mode
-
-
 ;; "loading" messages buffer
 (setq message-log-max t)
 
+;; eshell & external shell shortcut
 (global-set-key (kbd "C-c s") 'eshell)
+(defun yt/open-xfce-term ()
+  "Open xfce terminal"
+  (interactive)
+  (shell-command (concat "xfce4-terminal "
+			 "--working-directory="
+			 (file-truename default-directory))))
+(global-set-key (kbd "C-c S") 'yt/open-xfce-term)
+
+;; linux-kernel coding style for c files
+(setq c-default-style "linux"
+      c-basic-offset 4)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Completion & Selection config ;;
@@ -155,6 +164,9 @@
     (yas-global-mode))
   )
 
+(use-package smart-tabs-mode
+  :config
+  (smart-tabs-insinuate 'c 'c++ 'java 'javascript 'python))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; File Management & Rel. ;;
@@ -189,16 +201,79 @@
   (let ((name (buffer-name))
 	(filename (buffer-file-name)))
     (if (not (and filename (file-exists-p filename)))
-	(error "Buffer '%s' is not visiting a file!" name)
-      (let ((new-name (read-file-name "New name: " filename)))
+	(error "Buffer '%s' não se refere a um arquivo!" name)
+      (let ((new-name (read-file-name "Novo nome: " filename)))
 	if (get-buffer new-name)
-	(error "A buffer named '%s' already exists!" new-name)
+	(error "Um Buffer chamado '%s' já existe!" new-name)
 	(rename-file filename new-name 1)
 	(rename-buffer new-name)
 	(set-visited-file-name new-name)
 	(set-buffer-modified-p nil)
-	(message "File '%s' successfully renamed to '%s'"
+	(message "Arquivo '%s' renomeado com sucesso para '%s'"
 		 name (file-name-nondirectory new-name))))))
+
+;; get full path of current buffer
+(defun yt/copy-full-path-to-kill-ring ()
+  "Copy buffer's full path to kill ring."
+  (interactive)
+  (when buffer-file-name
+    (let* ((file-truename buffer-file-name))
+      (kill-new file-truename))))
+
+(defun yt/sudo-find-file (file-name)
+  "'Find file' function as a root"
+  (interactive "Encontrar arquivo (sudo): ")
+  (let ((tramp-file-name (concat "/sudo::" (expand-file-name file-name))))
+    (find-file tramp-file-name)))
+
+(defun yt/delete-this-buffer-and-file ()
+  "Removes file connected to current buffer and kills buffer."
+  (interactive)
+  (let ((filename (buffer-file-name))
+	(buffer (current-buffer))
+	(name (buffer-name)))
+    (if (not (and filename (file-exists-p filename)))
+	(error "Buffer '%s' não se refere a um arquivo!" name)
+      (when (yes-or-no-p "Quer realmente remover esse arquivo? ")
+	(delete-file filename)
+	(kill-buffer buffer)
+	(message "Arquivo '%s' removido com sucesso!" filename)))))
+
+(defun yt/save-all-buffers ()
+  "Save all file buffers without confirmation."
+  (interactive)
+  (save-some-buffers t nil)
+  (message "Salvando todos os Buffers... Pronto"))
+
+(defhydra hydra-file-management (:color red
+					:hint nil)
+  "
+_o_ -> Abrir arquivo
+_O_ -> Abrir arquivo como root
+_C_ -> Copiar o caminho do arquivo para área de transferência
+_r_ -> Renomear o arquivo do Buffer atual
+_d_ -> deletar o arquivo do Buffer atual
+_s_ -> Salvar todos os Buffers abertos
+_g_ -> Abrir o magit-status"
+  ("o" find-file)
+  ("O" yt/sudo-find-file)
+  ("C" yt/copy-full-path-to-kill-ring)
+  ("r" yt/rename-current-buffer-file)
+  ("d" yt/delete-this-buffer-and-file)
+  ("s" yt/save-all-buffers)
+  ("g" magit-status))
+(global-set-key [f3] 'hydra-file-management/body)
+
+(defun yt/open-file-manager ()
+  "Show current file in OS file manager ."
+  (interactive)
+  (cond
+   ((string-equal system-type "windows-nt")
+    (w32-shell-execute "explore" (replace-regexp-in-string "/" "\\" default-directory t t)))
+   ((string-equal system-type "darwin") (shell-command "open ."))
+   ((string-equal system-type "gnu/linux")
+    (let ((process-connection-type nil)) (start-process "" nil "xdg-open" ".")))))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Language & Spelling ;;
