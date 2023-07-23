@@ -3,17 +3,9 @@
 (package-initialize)
 
 (custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(smart-tabs-mode yasnippet helm-xref dap-mode lsp-mode cmake-mode htmlize helm-flyspell treemacs all-the-icons helm-projectile magit golden-ratio-scroll-screen golden-ratio helm-swoop multiple-cursors expand-region json-mode yaml-mode use-package markdown-mode zenburn-theme helm smartparens)))
+   '(vterm-toggle vterm python-mode smart-tabs-mode yasnippet helm-xref dap-mode lsp-mode cmake-mode htmlize helm-flyspell treemacs all-the-icons helm-projectile magit golden-ratio-scroll-screen golden-ratio helm-swoop multiple-cursors expand-region json-mode yaml-mode use-package markdown-mode zenburn-theme helm smartparens)))
 (custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
  )
 
 ;; Startup screen size
@@ -36,6 +28,10 @@
 ;;(set-frame-font "Source Code Pro-11" nil t)
 (set-face-attribute 'default nil :height 100)
 
+;; Loading GUI theme
+(if (display-graphic-p)
+    (load-theme 'zenburn))
+
 ;; gui settings
 (tool-bar-mode 1)
 (menu-bar-mode 1)
@@ -56,8 +52,8 @@
 ;; "loading" messages buffer
 (setq message-log-max t)
 
-;; eshell & external shell shortcut
-(global-set-key (kbd "C-c s") 'eshell)
+;; vshell & external shell shortcut
+(global-set-key (kbd "C-c s") 'vterm-toggle)
 (defun yt/open-xfce-term ()
   "Open xfce terminal"
   (interactive)
