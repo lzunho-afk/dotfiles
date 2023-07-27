@@ -3,9 +3,19 @@
 (package-initialize)
 
 (custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   '("f366d4bc6d14dcac2963d45df51956b2409a15b770ec2f6d730e73ce0ca5c8a7" default))
  '(package-selected-packages
-   '(vterm-toggle vterm python-mode smart-tabs-mode yasnippet helm-xref dap-mode lsp-mode cmake-mode htmlize helm-flyspell treemacs all-the-icons helm-projectile magit golden-ratio-scroll-screen golden-ratio helm-swoop multiple-cursors expand-region json-mode yaml-mode use-package markdown-mode zenburn-theme helm smartparens)))
+   '(python-mode yasnippet-snippets yasnippet-radical-snippets elpy vterm-toggle vterm smart-tabs-mode yasnippet helm-xref dap-mode lsp-mode cmake-mode htmlize helm-flyspell treemacs all-the-icons helm-projectile magit golden-ratio-scroll-screen golden-ratio helm-swoop multiple-cursors expand-region json-mode yaml-mode use-package markdown-mode zenburn-theme helm smartparens)))
 (custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  )
 
 ;; Startup screen size
@@ -28,9 +38,8 @@
 ;;(set-frame-font "Source Code Pro-11" nil t)
 (set-face-attribute 'default nil :height 100)
 
-;; Loading GUI theme
-(if (display-graphic-p)
-    (load-theme 'zenburn))
+;; Loading theme
+(load-theme 'zenburn)
 
 ;; gui settings
 (tool-bar-mode 1)
@@ -52,7 +61,7 @@
 ;; "loading" messages buffer
 (setq message-log-max t)
 
-;; vshell & external shell shortcut
+;; eshell & external shell shortcut
 (global-set-key (kbd "C-c s") 'vterm-toggle)
 (defun yt/open-xfce-term ()
   "Open xfce terminal"
@@ -75,6 +84,16 @@
   (sp-pair "(" ")" :wrap "C-(")
   (sp-pair "'" nil :actions :rem))
 
+;; Python-mode
+(use-package python-mode
+  :config
+  (add-hook 'python-mode-hook
+	    (lambda ()
+	      (setq tab-width 4)
+	      (setq indent-tabs-mode t)
+	      (setq py-indent-tabs-mode t)
+	      (setq python-indent-guess-indent-offset nil))))
+
 (use-package markdown-mode
   :config
   (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
@@ -83,6 +102,10 @@
 
 (use-package yaml-mode)
 (use-package json-mode)
+
+(use-package yasnippet
+  :config
+  (yas-global-mode 1))
 
 (use-package golden-ratio)
 (use-package helm
@@ -156,8 +179,7 @@
 
   (with-eval-after-load 'lsp-mode
     (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration)
-    (require 'dap-cpptools)
-    (yas-global-mode))
+    (require 'dap-cpptools))
   )
 
 (use-package smart-tabs-mode
